@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>Thoracic Outlet Syndrome - Science Fair Project by Farah Bahja</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin:0; padding:0;
+      height:100%;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1a2a6c 0%, #0f3460 60%, #16213e 100%);
+      overflow: hidden;
+      color: #111;
+      -webkit-font-smoothing: antialiased; 
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    #bubble-canvas {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      top: 0; left: 0;
+      pointer-events: none;
+    }
+    /* Main container */
+    .container {
+      position: relative;
+      max-width: 350px;
+      height: 600px;
+      margin: auto;
+      background: #f9f9f9;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      border-radius: 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 24px 28px 36px;
+      z-index: 10;
+      border: 2px solid #0f3460;
+      background-clip: padding-box;
+      user-select: text;
+      scroll-behavior: smooth;
+      color: #111;
+    }
+
+    /* Scrollbar hidden */
+    .container::-webkit-scrollbar {
+      display: none;
+    }
+    .container {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    /* Header styles */
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      position: sticky;
+      top: 0;
+      background: #f9f9f9;
+      padding-bottom: 14px;
+      border-bottom: 3px solid #0f3460;
+      z-index: 20;
+    }
+    header h1 {
+      font-size: 2rem;
+      background: linear-gradient(90deg, #0f3460, #1a2a6c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+      margin: 2px 0 6px;
+      user-select: text;
+    }
+    header h2 {
+      font-weight: 600;
+      color: #0f3460;
+      font-style: italic;
+      margin: 5px 0 8px;
+      font-size: 1.2rem;
+      user-select: text;
+    }
+    header h3 {
+      font-weight: 400;
+      margin: 0;
+      font-size: 1rem;
+      color: #34495e;
+      user-select: text;
+    }
+
+    /* Navigation styles */
+    nav {
+      margin: 14px 0 22px;
+      text-align: center;
+    }
+    nav ul {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 6px;
+      user-select: none;
+    }
+    nav li {
+      margin: 0 4px;
+      flex-grow: 1;
+    }
+    nav a {
+      color: #0f3460;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 7px 14px;
+      border-radius: 24px;
+      border: 1.5px solid #0f3460;
+      transition: background-color 0.3s, color 0.3s, transform 0.2s;
+      display: block;
+      box-shadow: 0 0 4px #0f3460aa;
+    }
+    nav a:hover, nav a:focus {
+      background: #1a2a6c;
+      color: #ecf0f1;
+      transform: scale(1.07);
+      box-shadow: 0 0 12px #1a2a6ccc;
+      outline: none;
+      border-color: #1a2a6c;
+    }
+
+    /* Section styling */
+    section {
+      margin-bottom: 40px;
+      border-radius: 16px;
+      padding: 18px 20px 26px 20px;
+      background: #ffffff;
+      box-shadow: 0 0 18px #1a2a6c33 inset;
+      transition: box-shadow 0.5s ease;
+      user-select: text;
+      color: #2c3e50;
+    }
+    section:hover, section:focus-within {
+      box-shadow: 0 0 28px #0f3460cc inset;
+      outline: none;
+    }
+
+    section h2 {
+      font-size: 1.4rem;
+      background: linear-gradient(270deg, #0f3460, #1a2a6c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      margin-top: 0; 
+      margin-bottom: 16px;
+      letter-spacing: 1.1px;
+      user-select: text;
+    }
+    section h3 {
+      margin-top: 8px;
+      color: #34495e;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      user-select: text;
+    }
+    p, ul {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: #34495e;
+      user-select: text;
+    }
+    p strong {
+      color: #0f3460;
+      font-weight: 600;
+      user-select: text;
+    }
+    ul {
+      padding-left: 22px;
+      margin-top: 14px;
+      margin-bottom: 14px;
+      color: #2c3e50;
+      user-select: text;
+    }
+    ul li {
+      margin-bottom: 10px;
+      position: relative;
+      padding-left: 24px;
+      user-select: text;
+    }
+    ul li::before {
+      content: "▹";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #1a2a6c;
+      font-weight: 900;
+      font-size: 1.2rem;
+      user-select: none;
+    }
+
+    /* Responsive Images */
+    .responsive {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      margin: 15px 0 24px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #1a2a6cbb;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: zoom-in;
+      user-select: none;
+    }
+    .responsive:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 40px #0f3460ff;
+      z-index: 10;
+      position: relative;
+    }
+
+    /* Arrows and icons inline */
+    .inline-icon {
+      vertical-align: middle;
+      width: 22px;
+      height: 22px;
+      margin-right: 8px;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.15));
+      user-select: none;
+      color: #0f3460;
+    }
+    .inline-icon:hover {
+      filter: drop-shadow(0 3px 6px rgba(25,41,93,0.8));
+    }
+    .arrow {
+      display: inline-block;
+      margin-left: 8px;
+      font-weight: bold;
+      color: #1a2a6c;
+      animation: arrow-move 1.6s infinite alternate;
+      user-select: none;
+      font-size: 1.3rem;
+    }
+    @keyframes arrow-move {
+      0% { transform: translateX(0);}
+      100% { transform: translateX(7px);}
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      color: #34495e;
+      border-top: 1px solid #dcdde1;
+      user-select: none;
+    }
+
+    /* Animated gradient in header */
+    .animated-gradient {
+      background: linear-gradient(270deg, #0f3460, #1a2a6c);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientBG 10s ease infinite;
+      user-select: text;
+    }
+
+    @keyframes gradientBG {
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+      cursor: help;
+      border-bottom: 1px dotted #1a2a6ccc;
+      color: #154360;
+      font-weight: 600;
+    }
+    .tooltip:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      background: rgba(26,42,108,0.95);
+      color: white;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      top: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: pre-line;
+      width: 260px;
+      box-shadow: 0 2px 12px rgba(26,42,108,0.75);
+      z-index: 2500;
+      pointer-events: none;
+      user-select: none;
+      animation: fadeInUp 0.25s ease forwards;
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateX(-50%) translateY(8px);}
+      to {opacity: 1; transform: translateX(-50%) translateY(0);}
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      user-select: text;
+    }
+    th, td {
+      border: 2px solid #1a2a6c88;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.88rem;
+      vertical-align: top;
+      color: #2c3e50;
+    }
+    thead th {
+      background: linear-gradient(90deg, #0f3460, #1a2a6c);
+      color: white;
+      font-weight: 600;
+      border-color: #16213e;
+    }
+    tbody tr:hover {
+      background: #e1e6f0;
+    }
+    tbody td:first-child {
+      font-weight: 600;
+      color: #142850;
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      header h2 {
+        font-size: 1.1rem;
+      }
+      header h3 {
+        font-size: 0.92rem;
+      }
+      section h2 {
+        font-size: 1.25rem;
+      }
+      p, ul {
+        font-size: 0.85rem;
+      }
+      nav a {
+        font-size: 0.95rem;
+        padding: 6px 9px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bubble-canvas" aria-hidden="true"></canvas>
+  <div class="container" role="main" tabindex="0" aria-label="Thoracic Outlet Syndrome Science Fair Project">
+
+    <header aria-label="Project Title and author">
+      <h1 class="animated-gradient" tabindex="0" aria-level="1" role="heading">
+        Thoracic Outlet Syndrome
+      </h1>
+      <h2 aria-level="2" role="heading">Anatomy and Treatment</h2>
+      <h3 aria-level="3" role="heading">By: Farah Bahja</h3>
+    </header>
+
+    <nav aria-label="Section Navigation" role="navigation">
+      <ul>
+        <li><a href="#anatomy" tabindex="0">Anatomy</a></li>
+        <li><a href="#causes" tabindex="0">Causes</a></li>
+        <li><a href="#types" tabindex="0">Types</a></li>
+        <li><a href="#symptoms" tabindex="0">Symptoms</a></li>
+        <li><a href="#treatment" tabindex="0">Treatment</a></li>
+        <li><a href="#references" tabindex="0">References</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <!-- Anatomy -->
+      <section id="anatomy" tabindex="0" aria-labelledby="anatomy-title" role="region">
+        <h2 id="anatomy-title">
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#0f3460" >
+            <path d="M12 2L15 8l6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" />
+          </svg>
+          Part 1: Anatomy of Thoracic Outlet Syndrome
+        </h2>
+        <p><strong>Definition:</strong> Thoracic Outlet Syndrome (TOS) refers to a group of disorders arising from compression of nerves, arteries, or veins located between the clavicle and the first rib or an additional rib.</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Blausen_0700_ThoracicOutletSyndromeAnatomy.png/600px-Blausen_0700_ThoracicOutletSyndromeAnatomy.png" 
+             alt="Thoracic Outlet Syndrome anatomy illustration" class="responsive" />
+        <p>TOS affects approximately 8% of the population and occurs 3 to 4 times more frequently in women. The average age range is 30 to 40 years; pediatric cases are rare.</p>
+
+        <ul>
+          <li><strong>Brachial Plexus:</strong> Network of nerves transmitting motor and sensory signals from the spinal cord to the arms and hands.</li>
+          <li><strong>Subclavian Artery:</strong> Primary artery supplying oxygen-rich blood to the upper body.</li>
+          <li><strong>Subclavian Vein:</strong> Main vein returning oxygen-poor blood from the upper body back to the heart.</li>
+        </ul>
+      </section>
+
+      <!-- Causes -->
+      <section id="causes" tabindex="0" aria-labelledby="causes-title" role="region">
+        <h2 id="causes-title">
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#0f3460">
+            <path d="M5 12l5 5L20 7" />
+          </svg>
+          Causes of Thoracic Outlet Syndrome
+        </h2>
+        <p>The causes are diverse and often multifactorial:</p>
+        <ul>
+          <li><strong>Anatomical factors:</strong> Congenital defects such as cervical ribs or fibrous bands that narrow the thoracic outlet space.</li>
+          <li><strong>Postural factors:</strong> Poor posture like drooping shoulders or forward head position increasing compression risk.</li>
+          <li><strong>Trauma:</strong> Injury or accidents causing internal changes that compress thoracic outlet structures.</li>
+        </ul>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Blausen_0304_CervicalRibAnatomy.png/600px-Blausen_0304_CervicalRibAnatomy.png" 
+             alt="Diagram showing cervical rib anatomy" class="responsive" />
+        <p><em>Note:</em> Cervical ribs are present in ~0.5-0.6% of the population; 50–80% bilateral, 10–20% symptomatic.</p>
+      </section>
+
+      <!-- Types -->
+      <section id="types" tabindex="0" aria-labelledby="types-title" role="region">
+        <h2 id="types-title">
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#0f3460">
+            <path d="M3 12l4 4 12-12" />
+          </svg>
+          Types of Thoracic Outlet Syndrome
+        </h2>
+        <p>The syndrome is classified into three main types:</p>
+        <ul>
+          <li><strong>Neurogenic TOS:</strong> Compresses brachial plexus nerves causing neurological symptoms.</li>
+          <li><strong>Venous TOS:</strong> Compression of subclavian vein causing limb swelling and blood clots.</li>
+          <li><strong>Arterial TOS:</strong> Compression of subclavian artery resulting in ischemia and cold extremities.</li>
+        </ul>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/14/Thoracic_outlet_syndrome_types.png" 
+             alt="Types of Thoracic Outlet Syndrome diagram" class="responsive" />
+      </section>
+
+      <!-- Symptoms -->
+      <section id="symptoms" tabindex="0" aria-labelledby="symptoms-title" role="region">
+        <h2 id="symptoms-title">
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#0f3460">
+            <path d="M12 19l-7-7h14z"/>
+          </svg>
+          Symptoms
+        </h2>
+        <p>Symptoms vary depending on the affected structures:</p>
+
+        <h3>Neurogenic TOS</h3>
+        <ul>
+          <li>Numbness or tingling in the arm or fingers</li>
+          <li>Pain or aches in neck, shoulder, arm, or hand</li>
+          <li>Weakness or loss of muscle control</li>
+        </ul>
+
+        <h3>Venous TOS</h3>
+        <ul>
+          <li>Swelling and bluish discoloration of the arm</li>
+          <li>Arm fatigue and pain</li>
+          <li>Blood clots (thoracic outlet vein thrombosis)</li>
+        </ul>
+
+        <h3>Arterial TOS</h3>
+        <ul>
+          <li>Coldness and paleness in the hands or fingers</li>
+          <li>Weak or absent pulses in the affected arm</li>
+          <li>Arm and hand pain</li>
+        </ul>
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Blausen_0702_ThoracicOutletSyndromeSymptoms.png/600px-Blausen_0702_ThoracicOutletSyndromeSymptoms.png" 
+             alt="Illustration of symptoms for thoracic outlet syndrome" class="responsive" />
+      </section>
+
+      <!-- Treatment -->
+      <section id="treatment" tabindex="0" aria-labelledby="treatment-title" role="region">
+        <h2 id="treatment-title">
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#1a2a6c">
+            <path d="M6 3l12 9-12 9V3z"/>
+          </svg>
+          Treatment Options
+        </h2>
+
+        <h3>Physical Therapy</h3>
+        <p>Physical therapy is the first line of treatment for neurogenic TOS, focusing on exercises that strengthen and stretch the shoulder muscles to relieve pressure on nerves and vessels and improve posture.</p>
+
+        <h3>Medications</h3>
+        <p>Anti-inflammatory drugs, muscle relaxants, and pain medications may be prescribed. Blood-thinning medications are used if blood clots are present.</p>
+
+        <h3>Surgical Options</h3>
+        <p>Surgical management is considered when conservative treatments fail. Thoracic outlet decompression may involve resection of ribs or fibrous bands, or vascular repair.</p>
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/First_rib_resection_technique.png/600px-First_rib_resection_technique.png" 
+             alt="Illustration of a first rib resection surgery" class="responsive" />
+      </section>
+
+      <!-- References -->
+      <section id="references" tabindex="0" aria-labelledby="references-title" role="region">
+        <h2 id="references-title">
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#0f3460">
+            <path d="M6 2h12a2 2 0 0 1 2 2v16l-4-4H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+          </svg>
+          References
+        </h2>
+        <ol style="font-size: 0.85rem; color:#0f3460; line-height: 1.45;">
+          <li>Illig KA. Thoracic outlet syndrome. <em>J Vasc Surg</em>. 2010 Mar;51(3):619-625. <a href="https://doi.org/10.1016/j.jvs.2009.12.059" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.jvs.2009.12.059</a></li>
+          <li>Roos DB. Neurogenic thoracic outlet syndrome. <em>J Vasc Surg</em>. 2015 Mar;61(3):859-865. <a href="https://doi.org/10.1016/j.jvs.2014.11.040" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.jvs.2014.11.040</a></li>
+          <li>Sanders RJ, Hammond SL. Neurogenic thoracic outlet syndrome: a review. <em>J Hand Surg Am</em>. 2014 Nov;39(11):2191-95. <a href="https://doi.org/10.1016/j.jhsa.2014.06.120" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.jhsa.2014.06.120</a></li>
+          <li>Peek J, Claus FL. Cervical ribs and thoracic outlet syndrome: radiological elucidations. <em>Ann Orthop Rheumatol</em>. 2018;35(4):112-118.</li>
+          <li>McCleary IJ, et al. Venous thoracic outlet syndrome treated by combined thrombolysis and transaxillary decompression. <em>Br J Surg</em>. 2013;100(8):1035-1039. <a href="https://doi.org/10.1002/bjs.9105" target="_blank" rel="noopener noreferrer">https://doi.org/10.1002/bjs.9105</a></li>
+        </ol>
+        <p style="font-size:0.8rem; color:#34495e; margin-top: 14px;">
+          All images and diagrams are from Wikimedia Commons, used for educational purposes only.
+        </p>
+      </section>
+    </main>
+
+    <footer role="contentinfo">
+      <p>© 2025 Farah Bahja - All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Bubble animation background on canvas
+
+    const canvas = document.getElementById('bubble-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let bubbles = [];
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    class Bubble {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = random(0, width);
+        this.y = random(height + 50, height + 150);
+        this.radius = random(7, 24);
+        this.speed = random(0.25, 1.2);
+        this.swing = Math.random() < 0.5 ? -1 : 1;
+        this.angle = random(0, Math.PI * 2);
+        this.color = `rgba(20,52,96, ${random(0.06,0.15)})`;
+      }
+      update() {
+        this.y -= this.speed;
+        this.angle += 0.02 * this.swing;
+        this.x += Math.sin(this.angle) * 0.3;
+        if (this.y + this.radius < 0 || this.x + this.radius < 0 || this.x - this.radius > width) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        let grad = ctx.createRadialGradient(this.x, this.y, this.radius * 0.3, this.x, this.y, this.radius);
+        grad.addColorStop(0, `rgba(20,52,96,${parseFloat(this.color.slice(-4,-1)) * 0.7})`);
+        grad.addColorStop(1, `rgba(20,52,96,0)`);
+        ctx.fillStyle = grad;
+        ctx.shadowColor = 'rgba(20,52,96,0.4)';
+        ctx.shadowBlur = 10;
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function init() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      bubbles = [];
+      for (let i = 0; i < 60; i++) {
+        bubbles.push(new Bubble());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let bubble of bubbles) {
+        bubble.update();
+        bub
